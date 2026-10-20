@@ -1,1 +1,51 @@
-<p>register works!</p>
+<main class="auth-page">
+	<section class="auth-panel" aria-labelledby="register-title">
+		<a class="brand-mark" routerLink="/" aria-label="Gym home">FORM<span>/</span>FIT</a>
+		<p class="eyebrow">START YOUR NEXT CHAPTER</p>
+		<h1 id="register-title">Join the movement</h1>
+		<p class="intro">Create your member account and make room for stronger days.</p>
+
+		<form (ngSubmit)="onRegister()" #registerForm="ngForm">
+			<label for="full_name">Full name</label>
+			<input
+				id="full_name"
+				name="full_name"
+				type="text"
+				autocomplete="name"
+				placeholder="Your name"
+				[(ngModel)]="userData.full_name"
+				required
+			/>
+
+			<label for="email">Email address</label>
+			<input
+				id="email"
+				name="email"
+				type="email"
+				autocomplete="email"
+				placeholder="you@example.com"
+				[(ngModel)]="userData.email"
+				required
+				email
+			/>
+
+			<label for="password">Password</label>
+			<input
+				id="password"
+				name="password"
+				type="password"
+				autocomplete="new-password"
+				placeholder="Choose a password"
+				[(ngModel)]="userData.password"
+				required
+				minlength="8"
+			/>
+
+			<p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+			<p *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
+			<button type="submit" [disabled]="registerForm.invalid">Create account <span aria-hidden="true">→</span></button>
+		</form>
+
+		<p class="switch-page">Already a member? <a routerLink="/login">Sign in</a></p>
+	</section>
+</main>

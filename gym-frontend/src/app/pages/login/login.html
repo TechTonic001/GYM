@@ -1,1 +1,37 @@
-<p>login works!</p>
+<main class="auth-page">
+	<section class="auth-panel" aria-labelledby="login-title">
+		<a class="brand-mark" routerLink="/" aria-label="Gym home">FORM<span>/</span>FIT</a>
+		<p class="eyebrow">MEMBER ACCESS</p>
+		<h1 id="login-title">Welcome back</h1>
+		<p class="intro">Sign in to pick up where your training left off.</p>
+
+		<form (ngSubmit)="onLogin()" #loginForm="ngForm">
+			<label for="email">Email address</label>
+			<input
+				id="email"
+				name="email"
+				type="email"
+				autocomplete="email"
+				placeholder="you@example.com"
+				[(ngModel)]="credentials.email"
+				required
+			/>
+
+			<label for="password">Password</label>
+			<input
+				id="password"
+				name="password"
+				type="password"
+				autocomplete="current-password"
+				placeholder="Enter your password"
+				[(ngModel)]="credentials.password"
+				required
+			/>
+
+			<p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+			<button type="submit" [disabled]="loginForm.invalid">Sign in <span aria-hidden="true">→</span></button>
+		</form>
+
+		<p class="switch-page">New to Form/Fit? <a routerLink="/register">Create an account</a></p>
+	</section>
+</main>
