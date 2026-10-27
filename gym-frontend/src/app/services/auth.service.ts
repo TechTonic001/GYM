@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+const JSON_HEADERS = { 'Content-Type': 'application/json' };
+
 export interface AuthResponse {
   success?: boolean;
   message?: string;
@@ -23,22 +25,28 @@ export class AuthService {
   ) {}
 
   register(userData: unknown): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register.php`, userData);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register.php`, userData, {
+      headers: JSON_HEADERS,
+    });
   }
 
   login(credentials: unknown): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login.php`, credentials).pipe(
-      tap((response) => {
-        if (!response.token) {
-          return;
-        }
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/login.php`, credentials, {
+        headers: JSON_HEADERS,
+      })
+      .pipe(
+        tap((response) => {
+          if (!response.token) {
+            return;
+          }
 
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user_id', String(response.user_id ?? ''));
-        localStorage.setItem('full_name', response.full_name ?? '');
-        localStorage.setItem('role', response.role ?? 'member');
-      }),
-    );
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('user_id', String(response.user_id ?? ''));
+          localStorage.setItem('full_name', response.full_name ?? '');
+          localStorage.setItem('role', response.role ?? 'member');
+        }),
+      );
   }
 
   isLoggedIn(): boolean {

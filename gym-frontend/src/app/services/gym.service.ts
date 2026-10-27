@@ -3,6 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+const JSON_HEADERS = { 'Content-Type': 'application/json' };
+
 export interface GymPlan {
   plan_id: number;
   name: string;
@@ -183,6 +185,7 @@ export class GymService {
     return this.http.post<{ success: boolean; message?: string }>(
       `${this.apiUrl}/subscribe.php`,
       data,
+      { headers: JSON_HEADERS },
     );
   }
 
@@ -242,7 +245,9 @@ export class GymService {
   }
 
   bookClass(payload: ClassBookingRequest): Observable<ClassBookingResponse> {
-    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/book_class.php`, payload);
+    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/book_class.php`, payload, {
+      headers: JSON_HEADERS,
+    });
   }
 
   getUserBookings(userId: number): Observable<ClassBooking[]> {
@@ -279,9 +284,11 @@ export class GymService {
   }
 
   cancelBooking(bookingId: number): Observable<ClassBookingResponse> {
-    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/cancel_booking.php`, {
-      booking_id: bookingId,
-    });
+    return this.http.post<ClassBookingResponse>(
+      `${this.apiUrl}/cancel_booking.php`,
+      { booking_id: bookingId },
+      { headers: JSON_HEADERS },
+    );
   }
 
   getProfile(userId: number): Observable<MemberProfile | null> {
@@ -305,11 +312,15 @@ export class GymService {
   }
 
   updateProfile(payload: MemberProfile & { user_id: number }): Observable<ClassBookingResponse> {
-    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/update_profile.php`, payload);
+    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/update_profile.php`, payload, {
+      headers: JSON_HEADERS,
+    });
   }
 
   logWorkout(payload: WorkoutRequest): Observable<WorkoutResponse> {
-    return this.http.post<WorkoutResponse>(`${this.apiUrl}/log_workout.php`, payload);
+    return this.http.post<WorkoutResponse>(`${this.apiUrl}/log_workout.php`, payload, {
+      headers: JSON_HEADERS,
+    });
   }
 
   getWorkoutHistory(userId: number): Observable<WorkoutSession[]> {
