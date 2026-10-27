@@ -1,10 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { vi } from 'vitest';
 import { ProfileComponent } from './profile.component';
 
 describe('ProfileComponent', () => {
@@ -12,6 +10,7 @@ describe('ProfileComponent', () => {
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
+    vi.spyOn(window, 'alert').mockImplementation(() => undefined);
     await TestBed.configureTestingModule({
       imports: [ProfileComponent],
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
@@ -29,7 +28,7 @@ describe('ProfileComponent', () => {
         gender: 'female',
         height_cm: 170,
         weight_kg: 70,
-        fitness_goal: 'lose_weight',
+        fitness_goal: 'weight_loss',
         target_weight_kg: 65,
       });
     await fixture.whenStable();
@@ -38,6 +37,7 @@ describe('ProfileComponent', () => {
   afterEach(() => {
     httpTestingController.verify();
     localStorage.clear();
+    vi.restoreAllMocks();
   });
 
   it('loads the profile and calculates BMI and category', () => {
@@ -47,6 +47,9 @@ describe('ProfileComponent', () => {
     expect(fixture.componentInstance.bmiColor).toBe('green');
     expect(fixture.componentInstance.targetProgress).toBe(93);
     expect(fixture.componentInstance.fitnessGoalLabel).toBe('Lose weight');
+
+    fixture.componentInstance.profile.weight_kg = 68;
+    expect(fixture.componentInstance.bmi).toBeCloseTo(23.53, 2);
   });
 
   it('posts profile updates for the logged-in user', () => {
@@ -63,7 +66,7 @@ describe('ProfileComponent', () => {
       gender: 'female',
       height_cm: 170,
       weight_kg: 68,
-      fitness_goal: 'lose_weight',
+      fitness_goal: 'weight_loss',
       target_weight_kg: 65,
     });
     request.flush({ success: true, message: 'Profile saved.' });

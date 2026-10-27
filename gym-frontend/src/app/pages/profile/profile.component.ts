@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MemberProfile, GymService } from '../../services/gym.service';
 
-type FitnessGoal = 'lose_weight' | 'build_muscle' | 'maintain' | 'improve_fitness';
+type FitnessGoal = 'weight_loss' | 'muscle_gain' | 'endurance' | 'maintenance';
 
 @Component({
   selector: 'app-profile',
@@ -16,10 +16,10 @@ type FitnessGoal = 'lose_weight' | 'build_muscle' | 'maintain' | 'improve_fitnes
 })
 export class ProfileComponent implements OnInit {
   readonly fitnessGoals: { value: FitnessGoal; label: string }[] = [
-    { value: 'lose_weight', label: 'Lose weight' },
-    { value: 'build_muscle', label: 'Build muscle' },
-    { value: 'maintain', label: 'Maintain my weight' },
-    { value: 'improve_fitness', label: 'Improve overall fitness' },
+    { value: 'weight_loss', label: 'Lose weight' },
+    { value: 'muscle_gain', label: 'Build muscle' },
+    { value: 'endurance', label: 'Improve endurance' },
+    { value: 'maintenance', label: 'Maintain my weight' },
   ];
 
   readonly profile: MemberProfile = {
@@ -27,7 +27,7 @@ export class ProfileComponent implements OnInit {
     gender: '',
     height_cm: null,
     weight_kg: null,
-    fitness_goal: 'improve_fitness',
+    fitness_goal: 'endurance',
     target_weight_kg: null,
   };
 
@@ -51,7 +51,11 @@ export class ProfileComponent implements OnInit {
     this.gymService.getProfile(userId).subscribe({
       next: (profile) => {
         if (profile) {
-          Object.assign(this.profile, profile);
+          Object.assign(this.profile, {
+            ...profile,
+            gender: profile.gender ?? '',
+            fitness_goal: profile.fitness_goal || 'endurance',
+          });
         }
         this.loading = false;
       },
@@ -66,7 +70,12 @@ export class ProfileComponent implements OnInit {
     const heightCm = Number(this.profile.height_cm);
     const weightKg = Number(this.profile.weight_kg);
 
-    if (!Number.isFinite(heightCm) || heightCm <= 0 || !Number.isFinite(weightKg) || weightKg <= 0) {
+    if (
+      !Number.isFinite(heightCm) ||
+      heightCm <= 0 ||
+      !Number.isFinite(weightKg) ||
+      weightKg <= 0
+    ) {
       return null;
     }
 
@@ -133,7 +142,12 @@ export class ProfileComponent implements OnInit {
 
     return Math.max(
       0,
-      Math.min(100, Math.round((Math.min(currentWeight, targetWeight) / Math.max(currentWeight, targetWeight)) * 100)),
+      Math.min(
+        100,
+        Math.round(
+          (Math.min(currentWeight, targetWeight) / Math.max(currentWeight, targetWeight)) * 100,
+        ),
+      ),
     );
   }
 
@@ -155,12 +169,14 @@ export class ProfileComponent implements OnInit {
 
   get fitnessTip(): string {
     switch (this.profile.fitness_goal as FitnessGoal) {
-      case 'lose_weight':
+      case 'weight_loss':
         return 'Build consistency with a balanced mix of strength training, cardio, and sustainable nutrition habits.';
-      case 'build_muscle':
+      case 'muscle_gain':
         return 'Focus on progressive strength training, recovery, and balanced meals with enough protein.';
-      case 'maintain':
+      case 'maintenance':
         return 'A steady routine and balanced meals can help you maintain your progress while staying energized.';
+      case 'endurance':
+        return 'Build your cardiovascular base gradually with regular sessions, recovery days, and steady progress.';
       default:
         return 'Set a routine you enjoy, increase activity gradually, and celebrate consistent effort.';
     }

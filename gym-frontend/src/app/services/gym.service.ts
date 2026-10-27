@@ -163,34 +163,32 @@ export class GymService {
   }
 
   getClasses(): Observable<GymClass[]> {
-    return this.http
-      .get<GymClass[] | ListResponse<GymClass>>(`${this.apiUrl}get_classes.php`)
-      .pipe(
-        map((response) => {
-          if (Array.isArray(response)) {
-            return response.map((gymClass) => ({
-              ...gymClass,
-              class_id: Number(gymClass.class_id),
-              available_spots: Number(gymClass.available_spots),
-            }));
-          }
-
-          if (response.success === false) {
-            throw new Error(response.message ?? 'Unable to load gym classes.');
-          }
-
-          const classes = response.classes ?? response.data;
-          if (!classes) {
-            throw new Error('The classes API returned an invalid response.');
-          }
-
-          return classes.map((gymClass) => ({
+    return this.http.get<GymClass[] | ListResponse<GymClass>>(`${this.apiUrl}get_classes.php`).pipe(
+      map((response) => {
+        if (Array.isArray(response)) {
+          return response.map((gymClass) => ({
             ...gymClass,
             class_id: Number(gymClass.class_id),
             available_spots: Number(gymClass.available_spots),
           }));
-        }),
-      );
+        }
+
+        if (response.success === false) {
+          throw new Error(response.message ?? 'Unable to load gym classes.');
+        }
+
+        const classes = response.classes ?? response.data;
+        if (!classes) {
+          throw new Error('The classes API returned an invalid response.');
+        }
+
+        return classes.map((gymClass) => ({
+          ...gymClass,
+          class_id: Number(gymClass.class_id),
+          available_spots: Number(gymClass.available_spots),
+        }));
+      }),
+    );
   }
 
   bookClass(payload: ClassBookingRequest): Observable<ClassBookingResponse> {
@@ -201,10 +199,9 @@ export class GymService {
     const params = new HttpParams().set('user_id', userId);
 
     return this.http
-      .get<ClassBooking[] | ListResponse<ClassBooking>>(
-        `${this.apiUrl}get_user_bookings.php`,
-        { params },
-      )
+      .get<ClassBooking[] | ListResponse<ClassBooking>>(`${this.apiUrl}get_user_bookings.php`, {
+        params,
+      })
       .pipe(
         map((response) => {
           if (Array.isArray(response)) {
