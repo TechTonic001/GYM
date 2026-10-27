@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { vi } from 'vitest';
 import { Dashboard } from './dashboard';
 
 describe('Dashboard', () => {
@@ -10,6 +11,8 @@ describe('Dashboard', () => {
   let httpTestingController: HttpTestingController;
 
   beforeEach(async () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+
     await TestBed.configureTestingModule({
       imports: [Dashboard],
       providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
@@ -43,6 +46,7 @@ describe('Dashboard', () => {
   afterEach(() => {
     httpTestingController.verify();
     localStorage.clear();
+    vi.restoreAllMocks();
   });
 
   it('should create', () => {

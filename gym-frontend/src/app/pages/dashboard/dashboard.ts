@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Chart, registerables } from 'chart.js';
+import type { Chart as ChartInstance } from 'chart.js';
 import { AuthService } from '../../services/auth.service';
 import {
   ClassBooking,
@@ -14,8 +14,6 @@ import {
   WorkoutAnalytics,
   UserSubscription,
 } from '../../services/gym.service';
-
-Chart.register(...registerables);
 
 @Component({
   standalone: true,
@@ -44,8 +42,9 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   successMessage = '';
   analyticsErrorMessage = '';
   workoutAnalytics: WorkoutAnalytics | null = null;
-  private volumeChart: Chart<'line'> | null = null;
-  private frequencyChart: Chart<'bar'> | null = null;
+  private volumeChart: ChartInstance<'line'> | null = null;
+  private frequencyChart: ChartInstance<'bar'> | null = null;
+  private destroyed = false;
 
   private readonly authService = inject(AuthService);
   private readonly gymService = inject(GymService);
@@ -83,6 +82,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.volumeChart?.destroy();
     this.frequencyChart?.destroy();
   }
@@ -191,8 +191,17 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     this.gymService.getWorkoutAnalytics(userId).subscribe({
       next: (analytics) => {
         this.workoutAnalytics = analytics;
-        this.renderWorkoutCharts(analytics);
-        this.loadingWorkoutAnalytics = false;
+        void this.renderWorkoutCharts(analytics)
+          .then(() => {
+            this.loadingWorkoutAnalytics = false;
+          })
+          .catch((error: unknown) => {
+            this.analyticsErrorMessage = this.getErrorMessage(
+              error instanceof Error ? error : new Error('Unable to initialize workout charts.'),
+              'Unable to initialize workout charts.',
+            );
+            this.loadingWorkoutAnalytics = false;
+          });
       },
       error: (error: HttpErrorResponse | Error) => {
         this.analyticsErrorMessage = this.getErrorMessage(
@@ -204,11 +213,24 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private renderWorkoutCharts(analytics: WorkoutAnalytics): void {
+  private async renderWorkoutCharts(analytics: WorkoutAnalytics): Promise<void> {
+    const { Chart, registerables } = await import('chart.js');
+    if (this.destroyed) {
+      return;
+    }
+
+    Chart.register(...registerables);
     this.volumeChart?.destroy();
     this.frequencyChart?.destroy();
+    const volumeContext = this.volumeCanvas.nativeElement.getContext('2d');
+    const frequencyContext = this.frequencyCanvas.nativeElement.getContext('2d');
 
-    this.volumeChart = new Chart(this.volumeCanvas.nativeElement, {
+    if (!volumeContext || !frequencyContext) {
+      this.analyticsErrorMessage = 'Workout charts are not supported in this browser.';
+      return;
+    }
+
+    this.volumeChart = new Chart(volumeContext, {
       type: 'line',
       data: {
         labels: analytics.labels,
@@ -241,7 +263,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       },
     });
 
-    this.frequencyChart = new Chart(this.frequencyCanvas.nativeElement, {
+    this.frequencyChart = new Chart(frequencyContext, {
       type: 'bar',
       data: {
         labels: analytics.labels,
