@@ -1,1 +1,172 @@
-<p>landing works!</p>
+<div class="page-shell">
+  <header class="site-header">
+    <nav class="navigation container" aria-label="Main navigation">
+      <a class="brand" routerLink="/" aria-label="FORM/FIT home">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span>FORM<span class="brand-slash">/</span>FIT</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#plans">Plans</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="login-link" routerLink="/login">Login</a>
+        <a class="button button-small button-primary" routerLink="/register">Get Started</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="status-dot"></span> YOUR NEXT LEVEL STARTS HERE</p>
+        <h1>Transform Your Body,<br /><span>Elevate Your Mind.</span></h1>
+        <p class="hero-description">
+          More than a gym. FORM/FIT is where expert coaching, smart training, and a
+          stronger community come together.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" routerLink="/register">
+            Join Now <span aria-hidden="true">↗</span>
+          </a>
+          <a class="button button-outline" href="#plans">View Plans</a>
+        </div>
+        <div class="hero-proof">
+          <div class="avatar-stack" aria-hidden="true">
+            <span>J</span><span>M</span><span>A</span><span>+</span>
+          </div>
+          <p><strong>Good energy. Great people.</strong><br />Find your crew at FORM/FIT.</p>
+        </div>
+      </div>
+
+      <div class="hero-art" role="img" aria-label="Illustration of a barbell and strength training weights">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <div class="art-label"><span class="status-dot"></span> BUILT FOR YOUR BEST</div>
+        <div class="barbell">
+          <span class="weight weight-left"></span>
+          <span class="bar"></span>
+          <span class="weight weight-right"></span>
+        </div>
+        <div class="art-stamp"><span>FORM</span><strong>01</strong><span>FIT</span></div>
+        <div class="art-caption">
+          <span>STRONGER EVERY DAY</span>
+          <span aria-hidden="true">✳</span>
+        </div>
+      </div>
+      <div class="hero-index" aria-hidden="true">01 / 03</div>
+    </section>
+
+    <section class="stats-strip" aria-label="FORM/FIT at a glance">
+      <div class="stats-inner container">
+        <p><strong>01</strong><span>YOUR GOALS, YOUR PACE</span></p>
+        <p><strong>24/7</strong><span>TRAIN ON YOUR TIME</span></p>
+        <p><strong>ALL IN</strong><span>COACHING THAT CARES</span></p>
+      </div>
+    </section>
+
+    <section class="section container" id="features">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">THE FORM/FIT DIFFERENCE</p>
+          <h2>Everything you need<br />to <span>show up stronger.</span></h2>
+        </div>
+        <p class="section-intro">
+          The right space, the right support, and the freedom to make fitness yours.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        @for (feature of features; track feature.title) {
+          <article class="feature-card">
+            <div class="feature-card-top">
+              <span class="feature-number">{{ feature.icon }}</span>
+              <span class="feature-arrow" aria-hidden="true">↗</span>
+            </div>
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="plans-section" id="plans">
+      <div class="container section">
+        <div class="section-heading plans-heading">
+          <div>
+            <p class="eyebrow">SIMPLE MEMBERSHIP. SERIOUS RESULTS.</p>
+            <h2>Find your <span>fit.</span></h2>
+          </div>
+          <p class="section-intro">
+            Choose the membership that meets you where you are. You bring the
+            commitment; we’ll bring the support.
+          </p>
+        </div>
+
+        <div class="plans-grid">
+          @for (plan of plans; track plan.name) {
+            <article class="plan-card" [class.plan-card-featured]="plan.featured">
+              @if (plan.featured) {
+                <span class="plan-badge">MOST POPULAR</span>
+              }
+              <p class="plan-name">{{ plan.name }}</p>
+              <p class="plan-description">{{ plan.description }}</p>
+              <p class="plan-price">
+                <strong>{{ plan.price }}</strong><span>/mo</span>
+              </p>
+              <a class="button plan-button" routerLink="/register">
+                Select Plan <span aria-hidden="true">↗</span>
+              </a>
+              <div class="plan-divider"></div>
+              <p class="plan-includes">WHAT'S INCLUDED</p>
+              <ul>
+                @for (feature of plan.features; track feature) {
+                  <li><span aria-hidden="true">✓</span>{{ feature }}</li>
+                }
+              </ul>
+            </article>
+          }
+        </div>
+        <p class="pricing-note">All memberships are billed monthly. No hidden fees, just good training.</p>
+      </div>
+    </section>
+
+    <section class="closing-cta container">
+      <div>
+        <p class="eyebrow">READY WHEN YOU ARE</p>
+        <h2>Your stronger starts <span>today.</span></h2>
+      </div>
+      <a class="button button-primary" routerLink="/register">
+        Get Started <span aria-hidden="true">↗</span>
+      </a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-main container">
+      <div class="footer-brand">
+        <a class="brand" routerLink="/" aria-label="FORM/FIT home">
+          <span class="brand-mark" aria-hidden="true">F</span>
+          <span>FORM<span class="brand-slash">/</span>FIT</span>
+        </a>
+        <p>Train with purpose. Feel the difference.<br />Your journey, on your terms.</p>
+      </div>
+      <div class="footer-navigation">
+        <span>EXPLORE</span>
+        <a href="#features">Features</a>
+        <a href="#plans">Membership plans</a>
+      </div>
+      <div class="footer-navigation">
+        <span>GET STARTED</span>
+        <a routerLink="/login">Login</a>
+        <a routerLink="/register">Create an account</a>
+      </div>
+    </div>
+    <div class="footer-bottom container">
+      <span>© {{ currentYear }} FORM/FIT. All rights reserved.</span>
+      <span>Fitness for every form.</span>
+    </div>
+  </footer>
+</div>

@@ -13,7 +13,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost/gym-backend';
+  private readonly apiUrl = 'http://localhost/gym-backend/';
 
   constructor(
     private readonly http: HttpClient,
@@ -21,11 +21,11 @@ export class AuthService {
   ) {}
 
   register(userData: unknown): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register.php`, userData);
+    return this.http.post<AuthResponse>(`${this.apiUrl}register.php`, userData);
   }
 
   login(credentials: unknown): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login.php`, credentials).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}login.php`, credentials).pipe(
       tap((response) => {
         if (!response.token) {
           return;
