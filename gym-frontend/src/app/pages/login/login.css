@@ -78,6 +78,55 @@ input:focus {
 	outline: 3px solid rgb(73 138 123 / 15%);
 }
 
+input {
+	box-sizing: border-box;
+}
+
+.password-field {
+	position: relative;
+}
+
+.password-field input {
+	padding-right: 50px;
+}
+
+.password-toggle {
+	position: absolute;
+	top: 50%;
+	right: 8px;
+	display: grid;
+	width: 36px;
+	height: 36px;
+	min-height: 36px;
+	margin: 0;
+	padding: 7px;
+	transform: translateY(-50%);
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	color: #56716b;
+	cursor: pointer;
+}
+
+.password-toggle:hover {
+	background: #edf3ef;
+}
+
+.password-toggle:focus-visible {
+	outline: 2px solid #498a7b;
+	outline-offset: 1px;
+}
+
+.password-toggle svg {
+	width: 100%;
+	height: 100%;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 1.8;
+}
+
 button {
 	display: flex;
 	justify-content: space-between;

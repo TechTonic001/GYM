@@ -12,7 +12,8 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.html',
 })
 export class Login {
-  readonly credentials = { email: '', password: '' };
+  readonly credentials = { identifier: '', password: '' };
+  showPassword = false;
   errorMessage = '';
 
   private readonly authService = inject(AuthService);

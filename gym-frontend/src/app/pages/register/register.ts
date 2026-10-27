@@ -12,7 +12,8 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './register.html',
 })
 export class Register {
-  readonly userData = { full_name: '', email: '', password: '' };
+  readonly userData = { full_name: '', username: '', email: '', password: '' };
+  showPassword = false;
   errorMessage = '';
   successMessage = '';
 
