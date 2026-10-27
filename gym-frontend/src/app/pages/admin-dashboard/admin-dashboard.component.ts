@@ -2,6 +2,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface RecentMember {
   user_id: number;
@@ -47,7 +48,7 @@ export class AdminDashboardComponent implements OnInit {
 
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
-  private readonly apiUrl = 'http://localhost/gym-backend/';
+  private readonly apiUrl = environment.apiUrl;
 
   ngOnInit(): void {
     this.loadOverview();
@@ -63,7 +64,7 @@ export class AdminDashboardComponent implements OnInit {
     this.updatingSubscriptionId = member.subscription_id;
 
     this.http
-      .post<ToggleSubscriptionResponse>(`${this.apiUrl}admin_toggle_subscription.php`, {
+      .post<ToggleSubscriptionResponse>(`${this.apiUrl}/admin_toggle_subscription.php`, {
         subscription_id: member.subscription_id,
         status: nextStatus,
       })
@@ -92,7 +93,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private loadOverview(): void {
-    this.http.get<AdminOverview>(`${this.apiUrl}admin_overview.php`).subscribe({
+    this.http.get<AdminOverview>(`${this.apiUrl}/admin_overview.php`).subscribe({
       next: (response) => {
         const overview = response.data ?? response;
         this.totalMembers = overview.totalMembers ?? overview.total_members ?? 0;

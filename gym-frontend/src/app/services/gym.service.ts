@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface GymPlan {
   plan_id: number;
@@ -145,12 +146,12 @@ interface WorkoutAnalyticsResponse extends WorkoutAnalytics {
 @Injectable({ providedIn: 'root' })
 export class GymService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost/gym-backend/';
+  private readonly apiUrl = environment.apiUrl;
 
   getPlans(): Observable<GymPlan[]> {
     return this.http
       .get<Array<Omit<GymPlan, 'features'> & { features: string | string[] }> | PlansResponse>(
-        `${this.apiUrl}get_plans.php`,
+        `${this.apiUrl}/get_plans.php`,
       )
       .pipe(
         map((response) => {
@@ -180,7 +181,7 @@ export class GymService {
 
   subscribe(data: SubscriptionRequest): Observable<{ success: boolean; message?: string }> {
     return this.http.post<{ success: boolean; message?: string }>(
-      `${this.apiUrl}subscribe.php`,
+      `${this.apiUrl}/subscribe.php`,
       data,
     );
   }
@@ -189,7 +190,7 @@ export class GymService {
     const params = new HttpParams().set('user_id', userId);
 
     return this.http
-      .get<UserSubscription | SubscriptionResponse>(`${this.apiUrl}get_user_subscription.php`, {
+      .get<UserSubscription | SubscriptionResponse>(`${this.apiUrl}/get_user_subscription.php`, {
         params,
       })
       .pipe(
@@ -212,7 +213,7 @@ export class GymService {
   }
 
   getClasses(): Observable<GymClass[]> {
-    return this.http.get<GymClass[] | ListResponse<GymClass>>(`${this.apiUrl}get_classes.php`).pipe(
+    return this.http.get<GymClass[] | ListResponse<GymClass>>(`${this.apiUrl}/get_classes.php`).pipe(
       map((response) => {
         if (Array.isArray(response)) {
           return response.map((gymClass) => ({
@@ -241,14 +242,14 @@ export class GymService {
   }
 
   bookClass(payload: ClassBookingRequest): Observable<ClassBookingResponse> {
-    return this.http.post<ClassBookingResponse>(`${this.apiUrl}book_class.php`, payload);
+    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/book_class.php`, payload);
   }
 
   getUserBookings(userId: number): Observable<ClassBooking[]> {
     const params = new HttpParams().set('user_id', userId);
 
     return this.http
-      .get<ClassBooking[] | ListResponse<ClassBooking>>(`${this.apiUrl}get_user_bookings.php`, {
+      .get<ClassBooking[] | ListResponse<ClassBooking>>(`${this.apiUrl}/get_user_bookings.php`, {
         params,
       })
       .pipe(
@@ -278,7 +279,7 @@ export class GymService {
   }
 
   cancelBooking(bookingId: number): Observable<ClassBookingResponse> {
-    return this.http.post<ClassBookingResponse>(`${this.apiUrl}cancel_booking.php`, {
+    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/cancel_booking.php`, {
       booking_id: bookingId,
     });
   }
@@ -286,7 +287,7 @@ export class GymService {
   getProfile(userId: number): Observable<MemberProfile | null> {
     return this.http
       .get<MemberProfile | ProfileResponse>(
-        `${this.apiUrl}get_profile.php?user_id=${encodeURIComponent(String(userId))}`,
+        `${this.apiUrl}/get_profile.php?user_id=${encodeURIComponent(String(userId))}`,
       )
       .pipe(
         map((response) => {
@@ -304,11 +305,11 @@ export class GymService {
   }
 
   updateProfile(payload: MemberProfile & { user_id: number }): Observable<ClassBookingResponse> {
-    return this.http.post<ClassBookingResponse>(`${this.apiUrl}update_profile.php`, payload);
+    return this.http.post<ClassBookingResponse>(`${this.apiUrl}/update_profile.php`, payload);
   }
 
   logWorkout(payload: WorkoutRequest): Observable<WorkoutResponse> {
-    return this.http.post<WorkoutResponse>(`${this.apiUrl}log_workout.php`, payload);
+    return this.http.post<WorkoutResponse>(`${this.apiUrl}/log_workout.php`, payload);
   }
 
   getWorkoutHistory(userId: number): Observable<WorkoutSession[]> {
@@ -316,7 +317,7 @@ export class GymService {
 
     return this.http
       .get<WorkoutSession[] | WorkoutHistoryResponse>(
-        `${this.apiUrl}get_workout_history.php`,
+        `${this.apiUrl}/get_workout_history.php`,
         { params },
       )
       .pipe(
@@ -343,7 +344,7 @@ export class GymService {
     const params = new HttpParams().set('user_id', userId);
 
     return this.http
-      .get<WorkoutAnalyticsResponse>(`${this.apiUrl}get_workout_analytics.php`, { params })
+      .get<WorkoutAnalyticsResponse>(`${this.apiUrl}/get_workout_analytics.php`, { params })
       .pipe(
         map((response) => {
           if (response.success === false) {

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface AuthResponse {
   success?: boolean;
@@ -14,7 +15,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost/gym-backend/';
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(
     private readonly http: HttpClient,
@@ -22,11 +23,11 @@ export class AuthService {
   ) {}
 
   register(userData: unknown): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}register.php`, userData);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register.php`, userData);
   }
 
   login(credentials: unknown): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}login.php`, credentials).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login.php`, credentials).pipe(
       tap((response) => {
         if (!response.token) {
           return;
