@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { GymClass, GymService } from './gym.service';
+import { GymClass, GymService, WorkoutRequest } from './gym.service';
 
 describe('GymService class booking methods', () => {
   let service: GymService;
@@ -73,5 +73,61 @@ describe('GymService class booking methods', () => {
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({ booking_id: 5 });
     request.flush({ success: true });
+  });
+
+  it('posts a workout and loads normalized workout history', () => {
+    const payload: WorkoutRequest = {
+      user_id: 7,
+      session_name: 'Leg Day',
+      workout_date: '2026-10-27',
+      duration_minutes: 45,
+      notes: '',
+      exercises: [
+        { exercise_name: 'Squat', set_number: 1, reps: 10, weight_kg: 60 },
+      ],
+    };
+
+    service.logWorkout(payload).subscribe((response) => {
+      expect(response.success).toBe(true);
+    });
+
+    const saveRequest = httpTestingController.expectOne(
+      'http://localhost/gym-backend/log_workout.php',
+    );
+    expect(saveRequest.request.method).toBe('POST');
+    expect(saveRequest.request.body).toEqual(payload);
+    saveRequest.flush({ success: true });
+
+    service.getWorkoutHistory(7).subscribe((history) => {
+      expect(history[0].session_id).toBe(21);
+      expect(history[0].duration_minutes).toBe(45);
+      expect(history[0].exercises[0].weight_kg).toBe(60);
+    });
+
+    const historyRequest = httpTestingController.expectOne(
+      (request) =>
+        request.url === 'http://localhost/gym-backend/get_workout_history.php' &&
+        request.params.get('user_id') === '7',
+    );
+    expect(historyRequest.request.method).toBe('GET');
+    historyRequest.flush({
+      success: true,
+      workouts: [
+        {
+          session_id: '21',
+          session_name: 'Leg Day',
+          workout_date: '2026-10-27',
+          duration_minutes: '45',
+          exercises: [
+            {
+              exercise_name: 'Squat',
+              set_number: '1',
+              reps: '10',
+              weight_kg: '60',
+            },
+          ],
+        },
+      ],
+    });
   });
 });

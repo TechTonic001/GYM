@@ -59,6 +59,31 @@ export interface MemberProfile {
   target_weight_kg: number | null;
 }
 
+export interface WorkoutExercise {
+  exercise_name: string;
+  set_number: number;
+  reps: number;
+  weight_kg: number;
+}
+
+export interface WorkoutRequest {
+  user_id: number;
+  session_name: string;
+  workout_date: string;
+  duration_minutes: number;
+  notes: string;
+  exercises: WorkoutExercise[];
+}
+
+export interface WorkoutSession {
+  session_id: number;
+  session_name: string;
+  workout_date: string;
+  duration_minutes: number;
+  notes?: string;
+  exercises: WorkoutExercise[];
+}
+
 export interface ProfileResponse {
   success?: boolean;
   message?: string;
@@ -91,6 +116,19 @@ interface SubscriptionResponse {
   message?: string;
   subscription?: UserSubscription | null;
   data?: UserSubscription | null;
+}
+
+interface WorkoutResponse {
+  success: boolean;
+  message?: string;
+}
+
+interface WorkoutHistoryResponse {
+  success?: boolean;
+  message?: string;
+  workouts?: WorkoutSession[];
+  sessions?: WorkoutSession[];
+  data?: WorkoutSession[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -256,5 +294,51 @@ export class GymService {
 
   updateProfile(payload: MemberProfile & { user_id: number }): Observable<ClassBookingResponse> {
     return this.http.post<ClassBookingResponse>(`${this.apiUrl}update_profile.php`, payload);
+  }
+
+  logWorkout(payload: WorkoutRequest): Observable<WorkoutResponse> {
+    return this.http.post<WorkoutResponse>(`${this.apiUrl}log_workout.php`, payload);
+  }
+
+  getWorkoutHistory(userId: number): Observable<WorkoutSession[]> {
+    const params = new HttpParams().set('user_id', userId);
+
+    return this.http
+      .get<WorkoutSession[] | WorkoutHistoryResponse>(
+        `${this.apiUrl}get_workout_history.php`,
+        { params },
+      )
+      .pipe(
+        map((response) => {
+          if (Array.isArray(response)) {
+            return response.map((session) => this.normalizeWorkoutSession(session));
+          }
+
+          if (response.success === false) {
+            throw new Error(response.message ?? 'Unable to load your workout history.');
+          }
+
+          const workouts = response.workouts ?? response.sessions ?? response.data;
+          if (!workouts) {
+            throw new Error('The workout history API returned an invalid response.');
+          }
+
+          return workouts.map((session) => this.normalizeWorkoutSession(session));
+        }),
+      );
+  }
+
+  private normalizeWorkoutSession(session: WorkoutSession): WorkoutSession {
+    return {
+      ...session,
+      session_id: Number(session.session_id),
+      duration_minutes: Number(session.duration_minutes),
+      exercises: (session.exercises ?? []).map((exercise) => ({
+        ...exercise,
+        set_number: Number(exercise.set_number),
+        reps: Number(exercise.reps),
+        weight_kg: Number(exercise.weight_kg),
+      })),
+    };
   }
 }

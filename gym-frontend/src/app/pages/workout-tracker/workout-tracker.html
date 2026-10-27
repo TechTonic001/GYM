@@ -1,0 +1,224 @@
+<main class="workout-page">
+  <header class="workout-header">
+    <a class="brand-mark" routerLink="/" aria-label="Gym home">FORM<span>/</span>FIT</a>
+    <a class="back-link" routerLink="/dashboard">← Member dashboard</a>
+  </header>
+
+  <section class="workout-content">
+    <div class="page-heading">
+      <p class="eyebrow">TRAIN WITH INTENTION</p>
+      <h1>Workout tracker</h1>
+      <p>Log your training, track your sets, and see your progress over time.</p>
+    </div>
+
+    <p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+    <p *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
+
+    <section class="workout-card" aria-labelledby="workout-form-title">
+      <div class="card-heading">
+        <p class="eyebrow">NEW SESSION</p>
+        <h2 id="workout-form-title">Workout details</h2>
+      </div>
+
+      <form #workoutForm="ngForm" (ngSubmit)="onSubmitWorkout()">
+        <div class="session-fields">
+          <label>
+            Session name
+            <input
+              type="text"
+              name="session_name"
+              placeholder="e.g. Leg Day"
+              maxlength="100"
+              [(ngModel)]="workout.session_name"
+              required
+            />
+          </label>
+
+          <label>
+            Workout date
+            <input
+              type="date"
+              name="workout_date"
+              [(ngModel)]="workout.workout_date"
+              required
+            />
+          </label>
+
+          <label>
+            Duration
+            <span class="input-wrap">
+              <input
+                type="number"
+                name="duration_minutes"
+                min="1"
+                step="1"
+                placeholder="45"
+                [(ngModel)]="workout.duration_minutes"
+                required
+              />
+              <span>min</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="exercise-heading">
+          <div>
+            <p class="eyebrow">YOUR TRAINING</p>
+            <h3>Exercise sets</h3>
+          </div>
+          <span class="set-count">{{ workout.exercises.length }} sets</span>
+        </div>
+
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Exercise name</th>
+                <th scope="col">Set #</th>
+                <th scope="col">Reps</th>
+                <th scope="col">Weight (kg)</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let exercise of workout.exercises; let i = index">
+                <td>
+                  <input
+                    type="text"
+                    [name]="'exercise_name_' + i"
+                    aria-label="Exercise name"
+                    placeholder="e.g. Squat"
+                    maxlength="100"
+                    [(ngModel)]="exercise.exercise_name"
+                    required
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    [name]="'set_number_' + i"
+                    aria-label="Set number"
+                    min="1"
+                    step="1"
+                    [(ngModel)]="exercise.set_number"
+                    required
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    [name]="'reps_' + i"
+                    aria-label="Reps"
+                    min="1"
+                    step="1"
+                    [(ngModel)]="exercise.reps"
+                    required
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    [name]="'weight_kg_' + i"
+                    aria-label="Weight in kilograms"
+                    min="0"
+                    step="0.1"
+                    [(ngModel)]="exercise.weight_kg"
+                    required
+                  />
+                </td>
+                <td>
+                  <button
+                    class="remove-button"
+                    type="button"
+                    (click)="removeExerciseRow(i)"
+                    [attr.aria-label]="'Remove set ' + (i + 1)"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="workout.exercises.length === 0">
+                <td class="empty-row" colspan="5">Add an exercise set to get started.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button class="add-button" type="button" (click)="addExerciseRow()">
+          <span aria-hidden="true">+</span> Add Exercise Set
+        </button>
+
+        <label class="notes-field">
+          Session notes <span class="optional-label">Optional</span>
+          <textarea
+            name="notes"
+            rows="3"
+            maxlength="1000"
+            placeholder="How did the workout feel?"
+            [(ngModel)]="workout.notes"
+          ></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button
+            class="save-button"
+            type="submit"
+            [disabled]="saving || userId === null || workoutForm.invalid"
+          >
+            {{ saving ? 'Saving workout…' : 'Save Workout' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="history-section" aria-labelledby="history-title">
+      <div class="history-heading">
+        <div>
+          <p class="eyebrow">YOUR TRAINING LOG</p>
+          <h2 id="history-title">Workout history</h2>
+        </div>
+        <span class="history-count">{{ workoutHistory.length }} sessions</span>
+      </div>
+
+      <p *ngIf="historyErrorMessage" class="feedback error" role="alert">
+        {{ historyErrorMessage }}
+      </p>
+      <p *ngIf="loadingHistory" class="feedback" role="status">Loading your workout history…</p>
+      <p
+        *ngIf="!loadingHistory && !historyErrorMessage && workoutHistory.length === 0"
+        class="empty-history"
+      >
+        Your saved workouts will appear here.
+      </p>
+
+      <div class="history-list" *ngIf="!loadingHistory">
+        <article class="history-card" *ngFor="let session of workoutHistory">
+          <div class="history-card-heading">
+            <div>
+              <p class="history-date">{{ session.workout_date | date: 'mediumDate' : 'UTC' }}</p>
+              <h3>{{ session.session_name }}</h3>
+            </div>
+            <div class="session-stats">
+              <span>{{ session.duration_minutes }} min</span>
+              <span>{{ totalVolume(session) | number: '1.0-1' }} kg volume</span>
+            </div>
+          </div>
+
+          <details class="exercise-details">
+            <summary>Exercises completed ({{ session.exercises.length }})</summary>
+            <ul *ngIf="session.exercises.length > 0">
+              <li *ngFor="let exercise of session.exercises">
+                <span>{{ exercise.exercise_name }}</span>
+                <span>Set {{ exercise.set_number }} · {{ exercise.reps }} reps</span>
+                <span>{{ exercise.weight_kg | number: '1.0-1' }} kg</span>
+              </li>
+            </ul>
+            <p *ngIf="session.exercises.length === 0" class="no-exercises">
+              No exercise details were returned for this session.
+            </p>
+          </details>
+        </article>
+      </div>
+    </section>
+  </section>
+</main>
