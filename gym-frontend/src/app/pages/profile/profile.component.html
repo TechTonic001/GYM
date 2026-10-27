@@ -1,0 +1,174 @@
+<main class="profile-page">
+  <header class="profile-header">
+    <a class="brand-mark" routerLink="/" aria-label="Gym home">FORM<span>/</span>FIT</a>
+    <a class="back-link" routerLink="/dashboard">← Member dashboard</a>
+  </header>
+
+  <section class="profile-content">
+    <div class="page-heading">
+      <p class="eyebrow">YOUR HEALTH, YOUR PACE</p>
+      <h1>Profile &amp; fitness metrics</h1>
+      <p>Keep your details up to date and track your personal fitness goals.</p>
+    </div>
+
+    <p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+    <p *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
+    <p *ngIf="loading" class="feedback" role="status">Loading your profile…</p>
+
+    <div class="profile-grid" *ngIf="!loading">
+      <section class="form-card" aria-labelledby="profile-form-title">
+        <div class="card-heading">
+          <p class="eyebrow">MEMBER DETAILS</p>
+          <h2 id="profile-form-title">Your profile</h2>
+        </div>
+
+        <form #profileForm="ngForm" (ngSubmit)="onSaveProfile()">
+          <div class="form-grid">
+            <label>
+              Age
+              <span class="input-wrap">
+                <input
+                  type="number"
+                  name="age"
+                  min="13"
+                  max="120"
+                  placeholder="e.g. 28"
+                  [(ngModel)]="profile.age"
+                />
+                <span>years</span>
+              </span>
+            </label>
+
+            <label>
+              Gender
+              <select name="gender" [(ngModel)]="profile.gender">
+                <option value="">Prefer not to say</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="non_binary">Non-binary</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+
+            <label>
+              Height
+              <span class="input-wrap">
+                <input
+                  type="number"
+                  name="height_cm"
+                  min="50"
+                  max="260"
+                  step="0.1"
+                  placeholder="e.g. 172"
+                  [(ngModel)]="profile.height_cm"
+                />
+                <span>cm</span>
+              </span>
+            </label>
+
+            <label>
+              Current weight
+              <span class="input-wrap">
+                <input
+                  type="number"
+                  name="weight_kg"
+                  min="20"
+                  max="500"
+                  step="0.1"
+                  placeholder="e.g. 74"
+                  [(ngModel)]="profile.weight_kg"
+                />
+                <span>kg</span>
+              </span>
+            </label>
+
+            <label>
+              Target weight
+              <span class="input-wrap">
+                <input
+                  type="number"
+                  name="target_weight_kg"
+                  min="20"
+                  max="500"
+                  step="0.1"
+                  placeholder="e.g. 70"
+                  [(ngModel)]="profile.target_weight_kg"
+                />
+                <span>kg</span>
+              </span>
+            </label>
+
+            <label class="goal-field">
+              Fitness goal
+              <select name="fitness_goal" [(ngModel)]="profile.fitness_goal">
+                @for (goal of fitnessGoals; track goal.value) {
+                  <option [value]="goal.value">{{ goal.label }}</option>
+                }
+              </select>
+            </label>
+          </div>
+
+          <button class="save-button" type="submit" [disabled]="saving || userId === null">
+            {{ saving ? 'Saving changes…' : 'Save changes' }}
+          </button>
+        </form>
+      </section>
+
+      <aside class="metrics-card" aria-labelledby="metrics-title">
+        <div class="card-heading">
+          <p class="eyebrow">LIVE METRICS</p>
+          <h2 id="metrics-title">Your progress</h2>
+        </div>
+
+        <section class="bmi-panel" [attr.data-bmi-color]="bmiColor" aria-label="Body mass index">
+          <div>
+            <p class="metric-label">BODY MASS INDEX</p>
+            <strong class="bmi-value">{{ bmi === null ? '—' : (bmi | number: '1.1-1') }}</strong>
+          </div>
+          <span class="category-badge">{{ bmiCategory }}</span>
+        </section>
+        <p class="metric-note">
+          BMI is a general screening measure and does not replace advice from a healthcare professional.
+        </p>
+
+        <section class="target-panel" aria-labelledby="target-title">
+          <div class="target-heading">
+            <div>
+              <p class="metric-label">TARGET PROXIMITY</p>
+              <h3 id="target-title">
+                {{ profile.target_weight_kg ? (profile.target_weight_kg | number: '1.0-1') + ' kg' : 'Set a target' }}
+              </h3>
+            </div>
+            <span class="target-percent" *ngIf="targetProgress !== null">{{ targetProgress }}%</span>
+          </div>
+          <div
+            class="progress-track"
+            role="progressbar"
+            [attr.aria-valuenow]="targetProgress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="Current weight proximity to target"
+          >
+            <span [style.width.%]="targetProgress ?? 0"></span>
+          </div>
+          <p class="metric-note" *ngIf="weightDifference !== null">
+            {{ weightDifference | number: '1.0-1' }} kg
+            {{ weightDifference === 0 ? 'to go — you reached your target!' : 'between you and your target' }}
+          </p>
+          <p class="metric-note" *ngIf="weightDifference === null">
+            Add your current and target weight to see your progress.
+          </p>
+        </section>
+
+        <section class="tip-panel" aria-labelledby="tip-title">
+          <span class="tip-icon" aria-hidden="true">✦</span>
+          <div>
+            <p class="metric-label">A TIP FOR YOUR GOAL</p>
+            <h3 id="tip-title">{{ fitnessGoalLabel }}</h3>
+            <p>{{ fitnessTip }}</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </section>
+</main>

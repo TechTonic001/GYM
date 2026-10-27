@@ -50,6 +50,22 @@ export interface ClassBookingRequest {
   booking_date: string;
 }
 
+export interface MemberProfile {
+  age: number | null;
+  gender: string;
+  height_cm: number | null;
+  weight_kg: number | null;
+  fitness_goal: string;
+  target_weight_kg: number | null;
+}
+
+export interface ProfileResponse {
+  success?: boolean;
+  message?: string;
+  profile?: MemberProfile | null;
+  data?: MemberProfile | null;
+}
+
 interface ListResponse<T> {
   success?: boolean;
   message?: string;
@@ -219,5 +235,29 @@ export class GymService {
     return this.http.post<ClassBookingResponse>(`${this.apiUrl}cancel_booking.php`, {
       booking_id: bookingId,
     });
+  }
+
+  getProfile(userId: number): Observable<MemberProfile | null> {
+    return this.http
+      .get<MemberProfile | ProfileResponse>(
+        `${this.apiUrl}get_profile.php?user_id=${encodeURIComponent(String(userId))}`,
+      )
+      .pipe(
+        map((response) => {
+          if ('age' in response) {
+            return response;
+          }
+
+          if (response.success === false) {
+            throw new Error(response.message ?? 'Unable to load your profile.');
+          }
+
+          return response.profile ?? response.data ?? null;
+        }),
+      );
+  }
+
+  updateProfile(payload: MemberProfile & { user_id: number }): Observable<ClassBookingResponse> {
+    return this.http.post<ClassBookingResponse>(`${this.apiUrl}update_profile.php`, payload);
   }
 }
