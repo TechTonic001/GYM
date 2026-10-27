@@ -40,10 +40,10 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          const user = response.user ?? response.data ?? {};
-          const userId = response.user_id ?? user.user_id ?? '';
-          const fullName = response.full_name ?? user.full_name ?? '';
-          const role = response.role ?? user.role ?? 'member';
+          const user = (response.user ?? response.data ?? {}) as Record<string, unknown>;
+          const userId = response.user_id ?? (user['user_id'] as string | number | undefined) ?? '';
+          const fullName = response.full_name ?? (user['full_name'] as string | undefined) ?? '';
+          const role = response.role ?? (user['role'] as string | undefined) ?? 'member';
           const token = response.token ?? '';
 
           if (!token) {
