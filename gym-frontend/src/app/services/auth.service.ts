@@ -8,11 +8,14 @@ const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 export interface AuthResponse {
   success?: boolean;
+  status?: string;
   message?: string;
   token?: string;
   user_id?: string | number;
   full_name?: string;
   role?: string;
+  user?: Record<string, unknown>;
+  data?: Record<string, unknown>;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -37,14 +40,20 @@ export class AuthService {
       })
       .pipe(
         tap((response) => {
-          if (!response.token) {
+          const user = response.user ?? response.data ?? {};
+          const userId = response.user_id ?? user.user_id ?? '';
+          const fullName = response.full_name ?? user.full_name ?? '';
+          const role = response.role ?? user.role ?? 'member';
+          const token = response.token ?? '';
+
+          if (!token) {
             return;
           }
 
-          localStorage.setItem('token', response.token);
-          localStorage.setItem('user_id', String(response.user_id ?? ''));
-          localStorage.setItem('full_name', response.full_name ?? '');
-          localStorage.setItem('role', response.role ?? 'member');
+          localStorage.setItem('token', token);
+          localStorage.setItem('user_id', String(userId ?? ''));
+          localStorage.setItem('full_name', String(fullName ?? ''));
+          localStorage.setItem('role', String(role ?? 'member'));
         }),
       );
   }

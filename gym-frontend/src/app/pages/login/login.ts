@@ -20,20 +20,33 @@ export class Login {
   private readonly router = inject(Router);
 
   onLogin(): void {
+    const trimmedIdentifier = (this.credentials.identifier ?? '').trim();
+    const trimmedPassword = (this.credentials.password ?? '').trim();
+
+    if (!trimmedIdentifier || !trimmedPassword) {
+      this.errorMessage = 'Please enter your username/email and password.';
+      return;
+    }
+
+    console.log('Login payload:', this.credentials);
+
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
+        console.log('Login response:', response);
+
         if (response.success) {
           this.errorMessage = '';
           void this.router.navigate(['/dashboard']);
           return;
         }
 
-        this.errorMessage = response.message ?? 'Unable to log in. Check your details and try again.';
+        this.errorMessage = response.message ?? 'Invalid username/email or password.';
       },
       error: (error: HttpErrorResponse) => {
+        console.error('Login error:', error);
         const apiError = error.error as { message?: string; error?: string } | null;
-        this.errorMessage = apiError?.message ?? apiError?.error ?? 'Unable to log in. Please try again.';
-      }
+        this.errorMessage = apiError?.message ?? apiError?.error ?? 'Invalid username/email or password.';
+      },
     });
   }
 }
