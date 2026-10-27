@@ -257,6 +257,52 @@
   background: #2b3c23;
 }
 
+.analytics-section {
+  margin-top: 3rem;
+}
+
+.workouts-link {
+  color: #d2f784;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.workouts-link:hover {
+  text-decoration: underline;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.analytics-card {
+  min-width: 0;
+  padding: 1.4rem;
+  border: 1px solid #35424c;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #202b34, #19232c);
+}
+
+.analytics-card h3 {
+  margin: 0 0 1.2rem;
+  font-size: 1rem;
+}
+
+.chart-container {
+  position: relative;
+  height: 260px;
+}
+
+.chart-empty-state {
+  min-height: 1.25rem;
+  margin: 0 0 0.6rem;
+  color: #aeb8c1;
+  font-size: 0.82rem;
+}
+
 .classes-section {
   margin-top: 3.5rem;
 }
@@ -446,5 +492,9 @@
 
   .status-card {
     align-items: flex-start;
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
   }
 }

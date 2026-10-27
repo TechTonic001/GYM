@@ -35,6 +35,49 @@
     <div *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</div>
     <div *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</div>
 
+    <section class="analytics-section" aria-labelledby="analytics-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">YOUR TRAINING TRENDS</p>
+          <h2 id="analytics-title">Analytics &amp; Progress</h2>
+        </div>
+        <a class="workouts-link" routerLink="/workouts">Log a workout</a>
+      </div>
+
+      <p *ngIf="loadingWorkoutAnalytics" class="empty-state" role="status">
+        Loading your workout analytics…
+      </p>
+      <p *ngIf="analyticsErrorMessage" class="feedback error" role="alert">
+        {{ analyticsErrorMessage }}
+      </p>
+
+      <div class="analytics-grid">
+        <article class="analytics-card">
+          <h3>Weekly Tonnage Lifted (kg)</h3>
+          <p *ngIf="!loadingWorkoutAnalytics && !analyticsErrorMessage && !hasWorkoutAnalytics"
+            class="chart-empty-state"
+          >
+            Log a workout to see your weekly lifting volume.
+          </p>
+          <div class="chart-container">
+            <canvas #volumeCanvas aria-label="Daily workout volume lifted over the last 7 days"></canvas>
+          </div>
+        </article>
+
+        <article class="analytics-card">
+          <h3>Workout Frequency</h3>
+          <p *ngIf="!loadingWorkoutAnalytics && !analyticsErrorMessage && !hasWorkoutAnalytics"
+            class="chart-empty-state"
+          >
+            Your workout and rest days will appear here.
+          </p>
+          <div class="chart-container">
+            <canvas #frequencyCanvas aria-label="Workout sessions per day over the last 7 days"></canvas>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="plans-section" aria-labelledby="plans-title">
       <div class="section-heading">
         <div>

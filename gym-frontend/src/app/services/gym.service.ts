@@ -84,6 +84,12 @@ export interface WorkoutSession {
   exercises: WorkoutExercise[];
 }
 
+export interface WorkoutAnalytics {
+  labels: string[];
+  frequency: number[];
+  volume: number[];
+}
+
 export interface ProfileResponse {
   success?: boolean;
   message?: string;
@@ -129,6 +135,11 @@ interface WorkoutHistoryResponse {
   workouts?: WorkoutSession[];
   sessions?: WorkoutSession[];
   data?: WorkoutSession[];
+}
+
+interface WorkoutAnalyticsResponse extends WorkoutAnalytics {
+  success?: boolean;
+  message?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -324,6 +335,43 @@ export class GymService {
           }
 
           return workouts.map((session) => this.normalizeWorkoutSession(session));
+        }),
+      );
+  }
+
+  getWorkoutAnalytics(userId: number): Observable<WorkoutAnalytics> {
+    const params = new HttpParams().set('user_id', userId);
+
+    return this.http
+      .get<WorkoutAnalyticsResponse>(`${this.apiUrl}get_workout_analytics.php`, { params })
+      .pipe(
+        map((response) => {
+          if (response.success === false) {
+            throw new Error(response.message ?? 'Unable to load workout analytics.');
+          }
+
+          if (
+            !Array.isArray(response.labels) ||
+            !Array.isArray(response.frequency) ||
+            !Array.isArray(response.volume) ||
+            response.labels.length !== 7 ||
+            response.frequency.length !== 7 ||
+            response.volume.length !== 7
+          ) {
+            throw new Error('The workout analytics API returned invalid data.');
+          }
+
+          const frequency = response.frequency.map(Number);
+          const volume = response.volume.map(Number);
+          if (![...frequency, ...volume].every(Number.isFinite)) {
+            throw new Error('The workout analytics API returned invalid totals.');
+          }
+
+          return {
+            labels: response.labels,
+            frequency,
+            volume,
+          };
         }),
       );
   }

@@ -30,6 +30,13 @@ describe('Dashboard', () => {
     httpTestingController
       .expectOne('http://localhost/gym-backend/get_user_bookings.php?user_id=7')
       .flush([]);
+    httpTestingController
+      .expectOne('http://localhost/gym-backend/get_workout_analytics.php?user_id=7')
+      .flush({
+        labels: ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'],
+        frequency: [0, 0, 0, 0, 0, 0, 0],
+        volume: [0, 0, 0, 0, 0, 0, 0],
+      });
     await fixture.whenStable();
   });
 
@@ -40,6 +47,7 @@ describe('Dashboard', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(component.hasWorkoutAnalytics).toBe(false);
   });
 
   it('books the next occurrence and reloads class availability and personal bookings', () => {

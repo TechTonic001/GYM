@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Chart, registerables } from 'chart.js';
 import { AuthService } from '../../services/auth.service';
 import {
   ClassBooking,
@@ -10,16 +11,23 @@ import {
   GymClass,
   GymPlan,
   GymService,
+  WorkoutAnalytics,
   UserSubscription,
 } from '../../services/gym.service';
 
+Chart.register(...registerables);
+
 @Component({
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   selector: 'app-dashboard',
   styleUrl: './dashboard.css',
   templateUrl: './dashboard.html',
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('volumeCanvas') private volumeCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('frequencyCanvas') private frequencyCanvas!: ElementRef<HTMLCanvasElement>;
+
   readonly classes: GymClass[] = [];
   readonly bookings: ClassBooking[] = [];
   readonly plans: GymPlan[] = [];
@@ -30,9 +38,14 @@ export class Dashboard implements OnInit {
   loadingBookings = false;
   bookingClassId: number | null = null;
   loadingPlans = true;
+  loadingWorkoutAnalytics = true;
   isSelectingPlan = false;
   errorMessage = '';
   successMessage = '';
+  analyticsErrorMessage = '';
+  workoutAnalytics: WorkoutAnalytics | null = null;
+  private volumeChart: Chart<'line'> | null = null;
+  private frequencyChart: Chart<'bar'> | null = null;
 
   private readonly authService = inject(AuthService);
   private readonly gymService = inject(GymService);
@@ -58,7 +71,27 @@ export class Dashboard implements OnInit {
     if (this.userId !== null) {
       this.loadSubscription(this.userId);
       this.loadUserBookings(this.userId);
+    } else {
+      this.loadingWorkoutAnalytics = false;
     }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.userId !== null) {
+      this.loadWorkoutAnalytics(this.userId);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.volumeChart?.destroy();
+    this.frequencyChart?.destroy();
+  }
+
+  get hasWorkoutAnalytics(): boolean {
+    return (
+      this.workoutAnalytics !== null &&
+      this.workoutAnalytics.frequency.some((count) => count > 0)
+    );
   }
 
   get hasActiveMembership(): boolean {
@@ -150,6 +183,94 @@ export class Dashboard implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  private loadWorkoutAnalytics(userId: number): void {
+    this.loadingWorkoutAnalytics = true;
+    this.analyticsErrorMessage = '';
+    this.gymService.getWorkoutAnalytics(userId).subscribe({
+      next: (analytics) => {
+        this.workoutAnalytics = analytics;
+        this.renderWorkoutCharts(analytics);
+        this.loadingWorkoutAnalytics = false;
+      },
+      error: (error: HttpErrorResponse | Error) => {
+        this.analyticsErrorMessage = this.getErrorMessage(
+          error,
+          'Unable to load workout analytics.',
+        );
+        this.loadingWorkoutAnalytics = false;
+      },
+    });
+  }
+
+  private renderWorkoutCharts(analytics: WorkoutAnalytics): void {
+    this.volumeChart?.destroy();
+    this.frequencyChart?.destroy();
+
+    this.volumeChart = new Chart(this.volumeCanvas.nativeElement, {
+      type: 'line',
+      data: {
+        labels: analytics.labels,
+        datasets: [
+          {
+            label: 'Volume lifted (kg)',
+            data: analytics.volume,
+            borderColor: '#c4f05c',
+            backgroundColor: 'rgba(196, 240, 92, 0.16)',
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#c4f05c',
+            pointBorderColor: '#111820',
+            pointRadius: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Kilograms lifted' },
+          },
+        },
+      },
+    });
+
+    this.frequencyChart = new Chart(this.frequencyCanvas.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: analytics.labels,
+        datasets: [
+          {
+            label: 'Sessions',
+            data: analytics.frequency,
+            backgroundColor: analytics.frequency.map((count) =>
+              count > 0 ? 'rgba(196, 240, 92, 0.8)' : 'rgba(113, 127, 139, 0.35)',
+            ),
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 },
+            title: { display: true, text: 'Workout sessions' },
+          },
+        },
+      },
+    });
   }
 
   getClassDayLabel(dayOfWeek: number | string): string {

@@ -130,4 +130,25 @@ describe('GymService class booking methods', () => {
       ],
     });
   });
+
+  it('loads seven days of workout analytics for a member', () => {
+    let analytics: { labels: string[]; frequency: number[]; volume: number[] } | undefined;
+
+    service.getWorkoutAnalytics(7).subscribe((result) => (analytics = result));
+
+    const request = httpTestingController.expectOne(
+      (httpRequest) =>
+        httpRequest.url === 'http://localhost/gym-backend/get_workout_analytics.php' &&
+        httpRequest.params.get('user_id') === '7',
+    );
+    expect(request.request.method).toBe('GET');
+    request.flush({
+      labels: ['Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue'],
+      frequency: [1, 0, 1, 1, 0, 1, 0],
+      volume: [3200, 0, 4500, 2800, 0, 5100, 0],
+    });
+
+    expect(analytics?.frequency).toEqual([1, 0, 1, 1, 0, 1, 0]);
+    expect(analytics?.volume).toEqual([3200, 0, 4500, 2800, 0, 5100, 0]);
+  });
 });
