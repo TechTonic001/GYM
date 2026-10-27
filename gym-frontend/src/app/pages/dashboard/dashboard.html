@@ -80,5 +80,89 @@
         }
       </div>
     </section>
+
+    <section class="classes-section" aria-labelledby="reserved-classes-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">YOUR UPCOMING SESSIONS</p>
+          <h2 id="reserved-classes-title">My reserved classes</h2>
+        </div>
+        <p>Keep your routine on track.</p>
+      </div>
+
+      <p *ngIf="loadingBookings" class="empty-state" role="status">Loading your reservations…</p>
+      <p *ngIf="!loadingBookings && bookings.length === 0" class="empty-state">
+        You haven’t reserved a class yet. Explore the weekly schedule below to book your first session.
+      </p>
+
+      <div class="bookings-grid" *ngIf="!loadingBookings && bookings.length > 0">
+        @for (booking of bookings; track booking.booking_id) {
+          <article class="booking-card">
+            <div class="booking-date">
+              <span>{{ booking.booking_date | date: 'EEE' }}</span>
+              <strong>{{ booking.booking_date | date: 'd' }}</strong>
+              <span>{{ booking.booking_date | date: 'MMM' }}</span>
+            </div>
+            <div class="booking-details">
+              <h3>{{ booking.title }}</h3>
+              <p>Coach {{ booking.trainer }}</p>
+              <span class="booking-time">
+                {{ booking.start_time | slice: 0:5 }} – {{ booking.end_time | slice: 0:5 }}
+              </span>
+            </div>
+            <span class="reserved-badge">RESERVED</span>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="classes-section" aria-labelledby="weekly-classes-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">TRAIN TOGETHER</p>
+          <h2 id="weekly-classes-title">Explore weekly classes</h2>
+        </div>
+        <p>Find a session that fits your schedule.</p>
+      </div>
+
+      <p *ngIf="loadingClasses" class="empty-state" role="status">Loading weekly classes…</p>
+      <p *ngIf="!loadingClasses && classes.length === 0" class="empty-state">
+        No classes are available right now. Please check back soon.
+      </p>
+
+      <div class="classes-grid" *ngIf="!loadingClasses && classes.length > 0">
+        @for (gymClass of classes; track gymClass.class_id) {
+          <article class="class-card">
+            <div class="class-card-heading">
+              <span class="class-day">{{ getClassDayLabel(gymClass.day_of_week) }}</span>
+              <span
+                class="spots-badge"
+                [class.spots-low]="gymClass.available_spots > 0 && gymClass.available_spots <= 3"
+                [class.spots-full]="gymClass.available_spots === 0"
+              >
+                {{
+                  gymClass.available_spots > 0
+                    ? gymClass.available_spots + ' spots left'
+                    : 'Fully booked'
+                }}
+              </span>
+            </div>
+            <h3>{{ gymClass.title }}</h3>
+            <p class="class-trainer">Coach {{ gymClass.trainer }}</p>
+            <p class="class-time">
+              {{ gymClass.start_time | slice: 0:5 }} – {{ gymClass.end_time | slice: 0:5 }}
+            </p>
+            <button
+              class="reserve-button"
+              type="button"
+              [disabled]="gymClass.available_spots < 1 || bookingClassId !== null"
+              (click)="onBookClass(gymClass.class_id)"
+            >
+              {{ bookingClassId === gymClass.class_id ? 'Reserving…' : 'Reserve spot' }}
+            </button>
+          </article>
+        }
+      </div>
+    </section>
   </section>
 </main>

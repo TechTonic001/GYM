@@ -257,6 +257,163 @@
   background: #2b3c23;
 }
 
+.classes-section {
+  margin-top: 3.5rem;
+}
+
+.bookings-grid,
+.classes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1rem;
+}
+
+.booking-card,
+.class-card {
+  border: 1px solid #35424c;
+  border-radius: 0.9rem;
+  background: #19232c;
+}
+
+.booking-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.booking-date {
+  display: grid;
+  width: 3.6rem;
+  min-height: 4.1rem;
+  flex: 0 0 auto;
+  place-content: center;
+  border-radius: 0.7rem;
+  background: rgba(196, 240, 92, 0.12);
+  color: #d2f784;
+  text-align: center;
+}
+
+.booking-date span {
+  font-size: 0.65rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.booking-date strong {
+  font-size: 1.4rem;
+  line-height: 1.25;
+}
+
+.booking-details {
+  min-width: 0;
+  flex: 1;
+}
+
+.booking-details h3,
+.class-card h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.booking-details p,
+.class-trainer {
+  margin: 0.35rem 0;
+  color: #aeb8c1;
+  font-size: 0.85rem;
+}
+
+.booking-time,
+.class-time {
+  color: #d2f784;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.reserved-badge,
+.class-day,
+.spots-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.reserved-badge {
+  padding: 0.4rem 0.55rem;
+  background: rgba(196, 240, 92, 0.12);
+  color: #d2f784;
+}
+
+.class-card {
+  display: flex;
+  min-height: 240px;
+  flex-direction: column;
+  padding: 1.25rem;
+}
+
+.class-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.class-day {
+  padding: 0.4rem 0.6rem;
+  background: #303b45;
+  color: #e1e6e9;
+  text-transform: capitalize;
+}
+
+.spots-badge {
+  padding: 0.4rem 0.6rem;
+  background: rgba(196, 240, 92, 0.12);
+  color: #d2f784;
+}
+
+.spots-badge.spots-low {
+  background: #493b22;
+  color: #ffda8a;
+}
+
+.spots-badge.spots-full {
+  background: #492b31;
+  color: #ffd5d5;
+}
+
+.class-trainer {
+  margin-block: 0.45rem 0.8rem;
+}
+
+.class-time {
+  margin: 0 0 1.2rem;
+}
+
+.reserve-button {
+  width: 100%;
+  margin-top: auto;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-radius: 0.6rem;
+  color: #17200d;
+  background: #c4f05c;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.reserve-button:hover:not(:disabled) {
+  background: #d4fa83;
+}
+
+.reserve-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 @media (max-width: 700px) {
   .topbar,
   .topbar-account {
@@ -280,6 +437,11 @@
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .booking-card {
+    align-items: flex-start;
+    flex-wrap: wrap;
   }
 
   .status-card {
