@@ -1,0 +1,11 @@
+{
+  "installCommand": "cd gym-frontend && npm ci",
+  "buildCommand": "cd gym-frontend && npm run build",
+  "outputDirectory": "gym-frontend/dist/gym-frontend/browser",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

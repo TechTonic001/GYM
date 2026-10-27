@@ -1,0 +1,288 @@
+.dashboard {
+  min-height: 100vh;
+  color: #f4f6f8;
+  background: #111820;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.25rem clamp(1.25rem, 5vw, 5rem);
+  border-bottom: 1px solid #29343e;
+  background: #171f28;
+}
+
+.brand-mark {
+  color: #f4f6f8;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand-mark span {
+  color: #c4f05c;
+}
+
+.topbar-account,
+.welcome {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-account {
+  gap: 1rem;
+}
+
+.welcome {
+  display: block;
+}
+
+.eyebrow {
+  margin: 0 0 0.45rem;
+  color: #a7b3bd;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.welcome h1 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.status-badge,
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #303b45;
+  color: #d3d9de;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.status-badge {
+  padding: 0.55rem 0.8rem;
+}
+
+.status-badge.active,
+.plan-badge {
+  background: rgba(196, 240, 92, 0.14);
+  color: #d2f784;
+}
+
+.logout-button {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #48545f;
+  border-radius: 0.6rem;
+  color: #f4f6f8;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.logout-button:hover {
+  border-color: #c4f05c;
+}
+
+.dashboard-content {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin: 0 auto;
+  padding: 3rem 0 5rem;
+}
+
+.status-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  border: 1px solid #35424c;
+  border-radius: 1.2rem;
+  background: linear-gradient(120deg, #202b34, #19232c);
+}
+
+.status-card h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+}
+
+.status-card p:last-child {
+  margin-bottom: 0;
+  color: #aeb8c1;
+}
+
+.status-icon {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: #d2f784;
+  background: rgba(196, 240, 92, 0.14);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.plans-section {
+  margin-top: 3.5rem;
+}
+
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.section-heading > p,
+.empty-state {
+  color: #aeb8c1;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1.25rem;
+}
+
+.plan-card {
+  position: relative;
+  display: flex;
+  min-height: 320px;
+  flex-direction: column;
+  padding: 1.6rem;
+  border: 1px solid #35424c;
+  border-radius: 1rem;
+  background: #19232c;
+}
+
+.plan-card.selected {
+  border-color: #c4f05c;
+  box-shadow: 0 0 0 1px rgba(196, 240, 92, 0.18);
+}
+
+.plan-badge {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+.plan-card h3 {
+  margin: 0.25rem 0 0.8rem;
+  font-size: 1.45rem;
+}
+
+.price {
+  margin: 0 0 1.25rem;
+  color: #d2f784;
+  font-size: 1.9rem;
+  font-weight: 800;
+}
+
+.price span {
+  color: #aeb8c1;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.features {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  color: #d5dbe0;
+  list-style: none;
+}
+
+.features li {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.features li span {
+  color: #c4f05c;
+}
+
+.plan-card button {
+  width: 100%;
+  margin-top: auto;
+  padding: 0.9rem 1rem;
+  border: 0;
+  border-radius: 0.65rem;
+  color: #17200d;
+  background: #c4f05c;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.plan-card button:hover:not(:disabled) {
+  background: #d4fa83;
+}
+
+.plan-card button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.feedback {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.65rem;
+}
+
+.feedback.error {
+  color: #ffd5d5;
+  background: #492b31;
+}
+
+.feedback.success {
+  color: #dcf9aa;
+  background: #2b3c23;
+}
+
+@media (max-width: 700px) {
+  .topbar,
+  .topbar-account {
+    align-items: flex-start;
+  }
+
+  .topbar {
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .topbar-account {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .welcome {
+    flex: 1 1 100%;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-card {
+    align-items: flex-start;
+  }
+}

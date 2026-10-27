@@ -1,1 +1,81 @@
-<p>dashboard works!</p>
+<main class="dashboard">
+  <header class="topbar">
+    <a class="brand-mark" routerLink="/" aria-label="Gym home">FORM<span>/</span>FIT</a>
+    <div class="topbar-account">
+      <div class="welcome">
+        <span class="eyebrow">MEMBER DASHBOARD</span>
+        <h1>Welcome, {{ fullName }}</h1>
+      </div>
+      <span class="status-badge" [class.active]="hasActiveMembership">
+        {{ hasActiveMembership ? 'Active member' : 'Membership pending' }}
+      </span>
+      <button class="logout-button" type="button" (click)="logout()">Log out</button>
+    </div>
+  </header>
+
+  <section class="dashboard-content" aria-label="Membership dashboard">
+    <section class="status-card" aria-labelledby="membership-title">
+      <div class="status-copy">
+        <p class="eyebrow">YOUR MEMBERSHIP</p>
+        <h2 id="membership-title">
+          {{
+            hasActiveMembership
+              ? (currentSubscription?.plan_name || currentSubscription?.name || 'Active plan')
+              : 'No Active Membership'
+          }}
+        </h2>
+        <p *ngIf="hasActiveMembership && currentSubscription?.end_date">
+          Membership active until {{ currentSubscription?.end_date | date: 'longDate' }}
+        </p>
+        <p *ngIf="!hasActiveMembership">Choose a plan below to get started.</p>
+      </div>
+      <span class="status-icon" aria-hidden="true">{{ hasActiveMembership ? '✓' : '＋' }}</span>
+    </section>
+
+    <div *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</div>
+
+    <section class="plans-section" aria-labelledby="plans-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">FIND YOUR FIT</p>
+          <h2 id="plans-title">Membership plans</h2>
+        </div>
+        <p>Choose the training plan that works for you.</p>
+      </div>
+
+      <p *ngIf="loadingPlans" class="empty-state" role="status">Loading membership plans…</p>
+      <p *ngIf="!loadingPlans && plans.length === 0 && !errorMessage" class="empty-state">
+        No membership plans are available right now.
+      </p>
+
+      <div class="plans-grid" *ngIf="!loadingPlans && plans.length > 0">
+        @for (plan of plans; track plan.plan_id) {
+          <article class="plan-card" [class.selected]="currentSubscription?.plan_id === plan.plan_id">
+            <span class="plan-badge" *ngIf="currentSubscription?.plan_id === plan.plan_id">
+              CURRENT PLAN
+            </span>
+            <p class="eyebrow">MEMBERSHIP</p>
+            <h3>{{ plan.name }}</h3>
+            <p class="price">
+              {{ plan.monthly_price | currency: 'USD' : 'symbol' : '1.2-2' }}
+              <span>/ month</span>
+            </p>
+            <ul class="features">
+              @for (feature of plan.features; track $index) {
+                <li><span aria-hidden="true">✓</span>{{ feature }}</li>
+              }
+            </ul>
+            <button
+              type="button"
+              [disabled]="isSelectingPlan || currentSubscription?.plan_id === plan.plan_id"
+              (click)="onSelectPlan(plan.plan_id)"
+            >
+              {{ currentSubscription?.plan_id === plan.plan_id ? 'Current plan' : 'Activate plan' }}
+            </button>
+          </article>
+        }
+      </div>
+    </section>
+  </section>
+</main>
