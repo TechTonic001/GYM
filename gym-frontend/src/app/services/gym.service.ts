@@ -46,19 +46,16 @@ export class GymService {
 
   getPlans(): Observable<GymPlan[]> {
     return this.http
-      .get<
-        | Array<Omit<GymPlan, 'features'> & { features: string | string[] }>
-        | PlansResponse
-      >(`${this.apiUrl}get_plans.php`)
+      .get<Array<Omit<GymPlan, 'features'> & { features: string | string[] }> | PlansResponse>(
+        `${this.apiUrl}get_plans.php`,
+      )
       .pipe(
         map((response) => {
           if (!Array.isArray(response) && response.success === false) {
             throw new Error(response.message ?? 'Unable to load membership plans.');
           }
 
-          const plans = Array.isArray(response)
-            ? response
-            : (response.plans ?? response.data);
+          const plans = Array.isArray(response) ? response : (response.plans ?? response.data);
 
           if (!plans) {
             throw new Error('The plans API returned an invalid response.');
@@ -74,14 +71,14 @@ export class GymService {
                   .map((feature) => feature.trim())
                   .filter(Boolean),
           }));
-        })
+        }),
       );
   }
 
   subscribe(data: SubscriptionRequest): Observable<{ success: boolean; message?: string }> {
     return this.http.post<{ success: boolean; message?: string }>(
       `${this.apiUrl}subscribe.php`,
-      data
+      data,
     );
   }
 
@@ -89,10 +86,9 @@ export class GymService {
     const params = new HttpParams().set('user_id', userId);
 
     return this.http
-      .get<UserSubscription | SubscriptionResponse>(
-        `${this.apiUrl}get_user_subscription.php`,
-        { params }
-      )
+      .get<UserSubscription | SubscriptionResponse>(`${this.apiUrl}get_user_subscription.php`, {
+        params,
+      })
       .pipe(
         map((response) => {
           if ('user_id' in response) {
@@ -108,7 +104,7 @@ export class GymService {
           }
 
           return response.data ?? null;
-        })
+        }),
       );
   }
 }

@@ -20,7 +20,7 @@
         <h2 id="membership-title">
           {{
             hasActiveMembership
-              ? (currentSubscription?.plan_name || currentSubscription?.name || 'Active plan')
+              ? currentSubscription?.plan_name || currentSubscription?.name || 'Active plan'
               : 'No Active Membership'
           }}
         </h2>
@@ -51,7 +51,10 @@
 
       <div class="plans-grid" *ngIf="!loadingPlans && plans.length > 0">
         @for (plan of plans; track plan.plan_id) {
-          <article class="plan-card" [class.selected]="currentSubscription?.plan_id === plan.plan_id">
+          <article
+            class="plan-card"
+            [class.selected]="currentSubscription?.plan_id === plan.plan_id"
+          >
             <span class="plan-badge" *ngIf="currentSubscription?.plan_id === plan.plan_id">
               CURRENT PLAN
             </span>
