@@ -9,6 +9,7 @@ export interface AuthResponse {
   token?: string;
   user_id?: string | number;
   full_name?: string;
+  role?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -17,7 +18,7 @@ export class AuthService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly router: Router
+    private readonly router: Router,
   ) {}
 
   register(userData: unknown): Observable<AuthResponse> {
@@ -34,7 +35,8 @@ export class AuthService {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user_id', String(response.user_id ?? ''));
         localStorage.setItem('full_name', response.full_name ?? '');
-      })
+        localStorage.setItem('role', response.role ?? 'member');
+      }),
     );
   }
 

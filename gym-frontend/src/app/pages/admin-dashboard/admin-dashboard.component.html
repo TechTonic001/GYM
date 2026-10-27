@@ -1,0 +1,104 @@
+<main class="admin-page">
+  <header class="admin-header">
+    <a class="brand-mark" routerLink="/" aria-label="Gym home">FORM<span>/</span>FIT</a>
+    <div class="header-actions">
+      <span class="admin-badge">ADMIN</span>
+      <button class="secondary-button" type="button" (click)="goToMemberDashboard()">
+        Member dashboard
+      </button>
+    </div>
+  </header>
+
+  <section class="admin-content">
+    <div class="page-heading">
+      <p class="eyebrow">GYM MANAGEMENT</p>
+      <h1>Admin overview</h1>
+      <p>Monitor membership growth, subscriptions, and member activity.</p>
+    </div>
+
+    <p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
+    <p *ngIf="loading" class="feedback" role="status">Loading admin overview…</p>
+
+    <section class="stats-grid" aria-label="Gym statistics" *ngIf="!loading">
+      <article class="stat-card">
+        <p>Total Members</p>
+        <strong>{{ totalMembers | number }}</strong>
+        <span>Registered accounts</span>
+      </article>
+      <article class="stat-card">
+        <p>Active Memberships</p>
+        <strong>{{ activeSubscriptions | number }}</strong>
+        <span>Current active subscriptions</span>
+      </article>
+      <article class="stat-card revenue-card">
+        <p>Projected Monthly Revenue</p>
+        <strong>{{ totalRevenue | currency: 'USD' : 'symbol' : '1.2-2' }}</strong>
+        <span>Based on active subscriptions</span>
+      </article>
+    </section>
+
+    <section class="members-section" aria-labelledby="members-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">LATEST ACTIVITY</p>
+          <h2 id="members-title">Recent members</h2>
+        </div>
+        <span class="member-count">{{ recentMembers.length }} members</span>
+      </div>
+
+      <p *ngIf="!loading && recentMembers.length === 0" class="empty-state">
+        No recent members to display.
+      </p>
+
+      <div class="table-wrap" *ngIf="recentMembers.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Full Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Plan</th>
+              <th scope="col">Status</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (member of recentMembers; track member.user_id) {
+              <tr>
+                <td data-label="Full Name">{{ member.full_name }}</td>
+                <td data-label="Email">{{ member.email }}</td>
+                <td data-label="Plan">{{ member.plan || 'No plan' }}</td>
+                <td data-label="Status">
+                  <span
+                    class="status-badge"
+                    [class.active]="member.status.toLowerCase() === 'active'"
+                  >
+                    {{ member.status }}
+                  </span>
+                </td>
+                <td data-label="Action">
+                  <button
+                    class="action-button"
+                    type="button"
+                    [disabled]="
+                      member.subscription_id === null ||
+                      updatingSubscriptionId === member.subscription_id
+                    "
+                    (click)="toggleSubscription(member)"
+                  >
+                    {{
+                      updatingSubscriptionId === member.subscription_id
+                        ? 'Updating…'
+                        : member.status.toLowerCase() === 'active'
+                          ? 'Deactivate'
+                          : 'Activate'
+                    }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</main>
