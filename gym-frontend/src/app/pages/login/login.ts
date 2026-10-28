@@ -15,6 +15,7 @@ export class Login {
   readonly credentials = { identifier: '', password: '' };
   showPassword = false;
   errorMessage = '';
+  isSubmitting = false;
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -28,8 +29,13 @@ export class Login {
       return;
     }
 
+    this.isSubmitting = true;
+    this.errorMessage = '';
+
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
+        this.isSubmitting = false;
+
         if (response.success) {
           this.errorMessage = '';
           void this.router.navigate(['/dashboard']);
@@ -39,6 +45,7 @@ export class Login {
         this.errorMessage = response.message ?? 'Invalid username/email or password.';
       },
       error: (error: HttpErrorResponse) => {
+        this.isSubmitting = false;
         const apiError = error.error as { message?: string; error?: string } | null;
         this.errorMessage = apiError?.message ?? apiError?.error ?? 'Invalid username/email or password.';
       },

@@ -47,7 +47,13 @@
 			</div>
 
 			<p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
-			<button type="submit" [disabled]="loginForm.invalid">Sign in <span aria-hidden="true">→</span></button>
+			<button type="submit" [disabled]="loginForm.invalid || isSubmitting">
+				<span class="button-content">
+					<span *ngIf="isSubmitting" class="button-loader" aria-hidden="true"></span>
+					<span>{{ isSubmitting ? 'Signing in...' : 'Sign in' }}</span>
+				</span>
+				<span aria-hidden="true">→</span>
+			</button>
 		</form>
 
 		<p class="switch-page">New to Form/Fit? <a routerLink="/register">Create an account</a></p>
