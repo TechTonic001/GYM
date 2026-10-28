@@ -28,12 +28,8 @@ export class Login {
       return;
     }
 
-    console.log('Login payload:', this.credentials);
-
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
-        console.log('Login response:', response);
-
         if (response.success) {
           this.errorMessage = '';
           void this.router.navigate(['/dashboard']);
@@ -43,7 +39,6 @@ export class Login {
         this.errorMessage = response.message ?? 'Invalid username/email or password.';
       },
       error: (error: HttpErrorResponse) => {
-        console.error('Login error:', error);
         const apiError = error.error as { message?: string; error?: string } | null;
         this.errorMessage = apiError?.message ?? apiError?.error ?? 'Invalid username/email or password.';
       },
