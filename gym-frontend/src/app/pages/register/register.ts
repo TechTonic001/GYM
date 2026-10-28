@@ -16,6 +16,7 @@ export class Register {
   showPassword = false;
   errorMessage = '';
   successMessage = '';
+  isSubmitting = false;
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -23,9 +24,12 @@ export class Register {
   onRegister(): void {
     this.errorMessage = '';
     this.successMessage = '';
+    this.isSubmitting = true;
 
     this.authService.register(this.userData).subscribe({
       next: (response) => {
+        this.isSubmitting = false;
+
         if (response.success) {
           this.successMessage = response.message ?? 'Your account is ready. Redirecting to sign in...';
           window.setTimeout(() => void this.router.navigate(['/login']), 1200);
@@ -35,6 +39,7 @@ export class Register {
         this.errorMessage = response.message ?? 'Unable to create your account. Please try again.';
       },
       error: (error: HttpErrorResponse) => {
+        this.isSubmitting = false;
         const apiError = error.error as { message?: string; error?: string } | null;
         this.errorMessage = apiError?.message ?? apiError?.error ?? 'Unable to create your account. Please try again.';
       }

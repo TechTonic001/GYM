@@ -76,7 +76,13 @@
 
 			<p *ngIf="errorMessage" class="feedback error" role="alert">{{ errorMessage }}</p>
 			<p *ngIf="successMessage" class="feedback success" role="status">{{ successMessage }}</p>
-			<button type="submit" [disabled]="registerForm.invalid">Create account <span aria-hidden="true">→</span></button>
+			<button type="submit" [disabled]="registerForm.invalid || isSubmitting">
+				<span class="button-content">
+					<span *ngIf="isSubmitting" class="button-loader" aria-hidden="true"></span>
+					<span>{{ isSubmitting ? 'Creating account...' : 'Create account' }}</span>
+				</span>
+				<span aria-hidden="true">→</span>
+			</button>
 		</form>
 
 		<p class="switch-page">Already a member? <a routerLink="/login">Sign in</a></p>
